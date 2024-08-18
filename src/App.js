@@ -330,17 +330,24 @@ function SearchPage() {
                   <Carousel showThumbs={false} infiniteLoop={true}>
                     {images.map((image, index) => (
                       <div key={index}>
-                        <img
-                          src={image.src}
-                          alt={image.alt || "Image"}
-                          width={"200px"}
-                          height={"200px"}
-                          style={{
-                            objectFit: "cover",
-                            width: "200px",
-                            height: "200px",
-                          }}
-                        />
+                        <a
+                          href={image.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={image.src}
+                            alt={image.alt || "Image"}
+                            width={"200px"}
+                            height={"200px"}
+                            style={{
+                              objectFit: "cover",
+                              width: "200px",
+                              height: "200px",
+                            }}
+                          />
+                        </a>
+
                         {image.alt && <p className="legend">{image.alt}</p>}
                       </div>
                     ))}
