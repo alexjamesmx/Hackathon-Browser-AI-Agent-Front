@@ -125,6 +125,7 @@ function SearchPage() {
       setHistoryRefresher(!historyRefresher);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
+      toast.error("There was a problem with the fetch operation");
     } finally {
       setFetchingSummary(false);
     }
