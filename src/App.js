@@ -43,6 +43,8 @@ function SearchPage() {
   };
 
   const getHistory = async () => {
+    check();
+
     try {
       const response = await fetch(`${BASE_URL}/scrape/history`, {
         headers: {
@@ -65,14 +67,52 @@ function SearchPage() {
     }
   };
 
+  const isExipred = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/auth/verifyToken`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+
+      if (!response.ok) {
+        toast.error("Session expired, please login again");
+        return true;
+      }
+      const data = await response.json();
+
+      console.log("data", data);
+
+      if (data.message === "Token is valid") {
+        console.log("token is valid");
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("There was a problem with the verify operation:", error);
+      return true;
+    }
+  };
+
   useEffect(() => {
     if (localStorage.getItem("authToken")) {
       setUser(localStorage.getItem("authToken"));
     }
   }, [isModalOpen]);
 
+  const check = async () => {
+    const expired = await isExipred();
+    if (expired) {
+      handleLogout();
+    }
+  };
   useEffect(() => {
-    if (!user) return;
+    if (!user && !localStorage.getItem("authToken")) return;
+
+    check();
+
+    setUser(localStorage.getItem("authToken"));
     console.log("getting history");
     getHistory();
   }, [user, historyRefresher]);
@@ -89,6 +129,8 @@ function SearchPage() {
       alert("Please enter a valid URL");
       return;
     }
+
+    check();
 
     setFetchingSummary(true);
     try {
