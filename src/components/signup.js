@@ -7,7 +7,8 @@ function AuthModal({ isOpen, onClose }) {
   const [isLogin, setIsLogin] = useState(true);
 
   //   const BASE_URL = "http://localhost:3001/auth";
-  const BASE_URL = "https://guarded-retreat-97709-6840d092ecf7.herokuapp.com";
+  const BASE_URL =
+    "https://guarded-retreat-97709-6840d092ecf7.herokuapp.com/auth";
 
   const toggleForm = () => setIsLogin(!isLogin);
 
