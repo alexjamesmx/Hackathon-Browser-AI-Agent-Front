@@ -170,7 +170,7 @@ function SearchPage() {
           theme="light"
         />
         <h1 className="text-4xl font-semibold text-gray-800 mb-8">
-          Easy Web Scraping
+          Mariposa - Easy Web Scraping
         </h1>
 
         {/* Tabs */}
