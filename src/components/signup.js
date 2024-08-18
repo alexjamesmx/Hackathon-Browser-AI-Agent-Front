@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
+import "../App.css";
 
 function AuthModal({ isOpen, onClose }) {
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false); // Loading state
 
   //   const BASE_URL = "http://localhost:3001/auth";
   const BASE_URL =
@@ -28,6 +30,8 @@ function AuthModal({ isOpen, onClose }) {
     },
     validationSchema,
     onSubmit: async (values) => {
+      setLoading(true); // Start loading
+
       const payload = { email: values.email, password: values.password };
 
       try {
@@ -58,6 +62,8 @@ function AuthModal({ isOpen, onClose }) {
       } catch (error) {
         console.error("There was a problem with the operation:", error);
         toast.error("An error occurred. Please try again.");
+      } finally {
+        setLoading(false); // Stop loading
       }
     },
   });
@@ -105,8 +111,15 @@ function AuthModal({ isOpen, onClose }) {
               <button
                 type="submit"
                 className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+                disabled={loading}
               >
-                {isLogin ? "Login" : "Sign Up"}
+                {loading ? (
+                  <div className="loader"></div> // Replace with your loader component or spinner
+                ) : isLogin ? (
+                  "Login"
+                ) : (
+                  "Sign Up"
+                )}{" "}
               </button>
             </form>
             <p className="text-center mt-4">
