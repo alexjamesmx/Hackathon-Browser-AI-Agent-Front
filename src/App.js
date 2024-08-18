@@ -6,9 +6,9 @@ import AuthModal from "./components/signup";
 
 function SearchPage() {
   const [activeTab, setActiveTab] = useState("scrape"); // Tab state
-  // const BASE_URL = "https://guarded-retreat-97709-6840d092ecf7.herokuapp.com";
+  const BASE_URL = "https://guarded-retreat-97709-6840d092ecf7.herokuapp.com";
 
-  const BASE_URL = "http://localhost:3001";
+  // const BASE_URL = "http://localhost:3001";
   const [labels, setLabels] = useState([]);
   const [summary, setSummary] = useState("");
   const [history, setHistory] = useState([]);
