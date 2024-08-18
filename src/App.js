@@ -14,7 +14,8 @@ function SearchPage() {
     return color;
   };
 
-  const BASE_URL = "http://localhost:3001";
+  // const BASE_URL = "http://localhost:3001";
+  const BASE_URL = "https://guarded-retreat-97709-6840d092ecf7.herokuapp.com";
   const [labels, setLabels] = useState([]);
   const [summary, setSummary] = useState("");
   const [url, setUrl] = useState("");
