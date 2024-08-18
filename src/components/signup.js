@@ -6,7 +6,8 @@ import { toast } from "react-toastify";
 function AuthModal({ isOpen, onClose }) {
   const [isLogin, setIsLogin] = useState(true);
 
-  const BASE_URL = "http://localhost:3001/auth";
+  //   const BASE_URL = "http://localhost:3001/auth";
+  const BASE_URL = "https://guarded-retreat-97709-6840d092ecf7.herokuapp.com";
 
   const toggleForm = () => setIsLogin(!isLogin);
 
