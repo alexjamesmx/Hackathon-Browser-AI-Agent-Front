@@ -60,10 +60,7 @@ function SearchPage() {
       setHistory(data);
       console.log(data);
     } catch (error) {
-      console.error(
-        "There was a problem with the history fetch operation:",
-        error
-      );
+      console.error("There was scrapping data. IA error", error);
     }
   };
 
@@ -212,7 +209,7 @@ function SearchPage() {
           theme="light"
         />
         <h1 className="text-4xl font-semibold text-gray-800 mb-8">
-          Mariposa - Easy Web Scraping
+          Easy Web Scraping
         </h1>
 
         {/* Tabs */}
