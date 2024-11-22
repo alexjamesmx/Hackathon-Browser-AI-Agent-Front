@@ -9,7 +9,7 @@ function AuthModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false); // Loading state
 
   //   const BASE_URL = "http://localhost:3001/auth";
-  const BASE_URL = "https://olostep-eb5687f86578.herokuapp.com";
+  const BASE_URL = "https://olostep-eb5687f86578.herokuapp.com/auth/";
 
   const toggleForm = () => setIsLogin(!isLogin);
 
