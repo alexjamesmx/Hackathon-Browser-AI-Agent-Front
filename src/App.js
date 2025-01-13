@@ -302,7 +302,7 @@ function SearchPage() {
                 work*
               </p>
               <p className="text-sm text-gray-700 mb-4">
-                *Input websites that have SSL (https) protocol*
+                *Input websites that have SSL (https) protocol only*
               </p>
             </div>
           </div>
