@@ -2,18 +2,15 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { toast, ToastContainer } from "react-toastify";
 import { Carousel } from "react-responsive-carousel";
-import AuthModal from "./components/signup";
 
 function SearchPage() {
   const [activeTab, setActiveTab] = useState("scrape"); // Tab state
-  const BASE_URL = "https://hackathon-browser-ai-agent-back.vercel.app/";
+  const BASE_URL = "https://hackathon-browser-ai-agent-back.vercel.app";
 
   // const BASE_URL = "http://localhost:3001";
   const [labels, setLabels] = useState([]);
   const [summary, setSummary] = useState("");
   const [history, setHistory] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [user, setUser] = useState("");
   const [url, setUrl] = useState("");
   const [websiteName, setWebsiteName] = useState("");
   const [keyPoints, setKeyPoints] = useState([]);
@@ -22,9 +19,6 @@ function SearchPage() {
   const [useFullLinks, setUseFullLinks] = useState(false);
   const [relatedContent, setRelatedContent] = useState([]);
   const [fetchingSummary, setFetchingSummary] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   const generateRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -35,107 +29,23 @@ function SearchPage() {
     return color;
   };
 
-  // On the client side (React)
-  const handleLogout = () => {
-    localStorage.removeItem("authToken"); // Remove the JWT token
-    // Optionally, you can redirect the user to the login page
-    window.location.href = "/login";
-  };
-
-  const getHistory = async () => {
-    check();
-
-    try {
-      const response = await fetch(`${BASE_URL}/scrape/history`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-
-      if (!response.ok) {
-        toast.error("There was a problem with history fetch operation");
-        return;
-      }
-      const data = await response.json();
-      setHistory(data);
-      console.log(data);
-    } catch (error) {
-      console.error("There was scrapping data. IA error", error);
-    }
-  };
-
-  const isExipred = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/auth/verifyToken`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-
-      if (!response.ok) {
-        toast.error("Session expired, please login again");
-        return true;
-      }
-      const data = await response.json();
-
-      console.log("data", data);
-
-      if (data.message === "Token is valid") {
-        console.log("token is valid");
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error("There was a problem with the verify operation:", error);
-      return true;
-    }
-  };
-
   useEffect(() => {
-    if (localStorage.getItem("authToken")) {
-      setUser(localStorage.getItem("authToken"));
-    }
-  }, [isModalOpen]);
-
-  const check = async () => {
-    const expired = await isExipred();
-    if (expired) {
-      handleLogout();
-    }
-  };
-  useEffect(() => {
-    if (!user && !localStorage.getItem("authToken")) return;
-
-    check();
-
-    setUser(localStorage.getItem("authToken"));
-    console.log("getting history");
-    getHistory();
-  }, [user, historyRefresher]);
+    const historyData = JSON.parse(localStorage.getItem("history")) || [];
+    setHistory(historyData);
+  }, [historyRefresher]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!user) {
-      openModal();
-      return;
-    }
-
     if (!url) {
       alert("Please enter a valid URL");
       return;
     }
-
-    check();
-
     setFetchingSummary(true);
     try {
       const response = await fetch(`${BASE_URL}/scrape`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({ url }),
       });
@@ -156,6 +66,11 @@ function SearchPage() {
         color: generateRandomColor(),
       }));
 
+      // set links to the website in the local storage
+      const historyData = JSON.parse(localStorage.getItem("history")) || [];
+      historyData.push({ websiteLink: url, website });
+      localStorage.setItem("history", JSON.stringify(historyData));
+
       setWebsiteName(website.websiteName);
       setLabels(labeledColors);
       setRelatedContent(website.relatedContent);
@@ -171,26 +86,9 @@ function SearchPage() {
   };
 
   const clearHistory = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/scrape/history`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-
-      if (!response.ok) {
-        toast.error("There was a problem with the history clear operation");
-        return;
-      }
-      toast.success("History cleared successfully");
-      setHistory([]);
-    } catch (error) {
-      console.error(
-        "There was a problem with the history clear operation:",
-        error
-      );
-    }
+    toast.success("History cleared successfully");
+    localStorage.removeItem("history");
+    setHistoryRefresher(!historyRefresher);
   };
 
   return (
@@ -225,7 +123,7 @@ function SearchPage() {
             Scrape
           </button>
 
-          {user && (
+          {history && (
             <button
               className={`px-4 py-2 rounded-lg shadow-md ${
                 activeTab === "history"
@@ -235,15 +133,6 @@ function SearchPage() {
               onClick={() => setActiveTab("history")}
             >
               History
-            </button>
-          )}
-
-          {user && (
-            <button
-              className="px-4 py-2 rounded-lg shadow-md bg-red-500 text-white"
-              onClick={handleLogout}
-            >
-              Logout
             </button>
           )}
         </div>
@@ -395,6 +284,27 @@ function SearchPage() {
                 </>
               )}
             </div>
+
+            {/* Notes. website information */}
+            <div className="w-full max-w-lg p-6  mt-8">
+              <p className="text-sm text-gray-700 mb-4">
+                This is a web scraping tool that allows you to scrape
+                information from a website. You can use it to get a summary of
+                the website, labels, key points, useful links, related content,
+                and images.
+              </p>
+              <p className="text-sm text-gray-700 mb-4">
+                *Execution time greater than 60 seconds will result in a timeout
+                (hosted on vercel).*
+              </p>
+              <p className="text-sm text-gray-700 mb-4">
+                *Websites that require authentication or have a CAPTCHA may not
+                work*
+              </p>
+              <p className="text-sm text-gray-700 mb-4">
+                *Input websites that have SSL (https) protocol*
+              </p>
+            </div>
           </div>
         )}
 
@@ -434,7 +344,6 @@ function SearchPage() {
           </div>
         )}
       </div>
-      <AuthModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 }
